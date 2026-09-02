@@ -9,7 +9,12 @@ edition = "2024"
 js_bundle_version = "0.2.2"
 
 [workspace]
-members = ["crates/*"]
+members = [
+    "crates/obs-glorp-capture",
+    "crates/render-dll",
+    "crates/webview-dll",
+    # "crates/glorp-interpose" - Soon:tm:
+]
 
 # https://doc.rust-lang.org/rustc/codegen-options/index.html
 [profile.dev]
