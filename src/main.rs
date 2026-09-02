@@ -18,7 +18,7 @@ fn main() {
     platform::backend::run();
 }
 
-#[cfg(unix)]
+#[cfg(target_os = "linux")]
 fn main() {
-    eprintln!("linux backend not yet implemented");
+    platform::backend::run();
 }
