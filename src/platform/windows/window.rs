@@ -1,4 +1,5 @@
 use super::{app::create_main_window, utils};
+pub use crate::shared::window_state::{Position, WindowState};
 use std::{
     env,
     ffi::c_void,
@@ -18,13 +19,6 @@ use windows::{
 
 static WINDOW_COUNT: AtomicUsize = AtomicUsize::new(0);
 
-#[derive(Copy, Clone, serde::Serialize, serde::Deserialize, Default, Debug)]
-pub struct Position {
-    pub left: i32,
-    pub top: i32,
-    pub right: i32,
-    pub bottom: i32,
-}
 
 impl From<RECT> for Position {
     fn from(rect: RECT) -> Self {
@@ -37,11 +31,6 @@ impl From<RECT> for Position {
     }
 }
 
-#[derive(Copy, Clone, serde::Serialize, serde::Deserialize, Default, Debug)]
-pub struct WindowState {
-    pub fullscreen: bool,
-    pub position: Position,
-}
 
 #[derive(Clone)]
 pub struct Window {
