@@ -40,7 +40,7 @@ fn string_download(url: &str) -> result::Result<String, ureq::Error> {
 }
 
 pub fn check_minor_update() -> Option<String> {
-    let Ok(new_ver) = string_download(constants::JS_VERSION_URL) else {
+    let Ok(new_ver) = string_download(crate::shared::constants::JS_VERSION_URL) else {
         return None;
     };
     let resouce_folder = env::current_exe().unwrap().parent().unwrap().join("resources");
@@ -63,7 +63,7 @@ pub fn check_minor_update() -> Option<String> {
     };
 
     if parsed_new_ver > parsed_current_ver {
-        let Ok(new_js) = string_download(constants::JS_BUNDLE_URL) else {
+        let Ok(new_js) = string_download(crate::shared::constants::JS_BUNDLE_URL) else {
             return None;
         };
         utils::atomic_write(&resouce_folder.join("bundle.js"), &new_js).ok()?;
@@ -78,7 +78,7 @@ pub fn check_minor_update() -> Option<String> {
 
 pub fn check_major_update() {
     // fetch latest version form github
-    let Ok(buf) = string_download(constants::UPDATE_URL) else {
+    let Ok(buf) = string_download(crate::shared::constants::UPDATE_URL) else {
         return;
     };
 

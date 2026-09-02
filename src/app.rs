@@ -1,5 +1,5 @@
 use crate::utils::config;
-use crate::{constants, handlers, modules, utils, window};
+use crate::{handlers, modules, utils, window};
 use discord_rich_presence::{DiscordIpc, DiscordIpcClient};
 use std::{
     env, fs, io, path, result,
@@ -27,10 +27,10 @@ pub fn init_fs() -> result::Result<(), io::Error> {
     fs::create_dir_all(&resources_dir)?;
 
     if !path::Path::new(&flaglist_path).exists() {
-        fs::write(&flaglist_path, constants::DEFAULT_FLAGS)?;
+        fs::write(&flaglist_path, crate::shared::constants::DEFAULT_FLAGS)?;
     }
     if !path::Path::new(&blocklist_path).exists() {
-        fs::write(&blocklist_path, constants::DEFAULT_BLOCKLIST)?;
+        fs::write(&blocklist_path, crate::shared::constants::DEFAULT_BLOCKLIST)?;
     }
     Ok(())
 }
@@ -83,7 +83,7 @@ pub fn create_main_window(env: Option<ICoreWebView2Environment>) -> window::Wind
     let main_window = window::Window::new_core(&start_mode, args, env, state);
     let discord_client: Arc<Mutex<Option<DiscordIpcClient>>> = Arc::new(Mutex::new(None));
     if config("discordRPC", true) {
-        let mut client = DiscordIpcClient::new(constants::DISCORD_CLIENT_ID);
+        let mut client = DiscordIpcClient::new(crate::shared::constants::DISCORD_CLIENT_ID);
         client.connect().ok();
         *discord_client.lock().unwrap() = Some(client);
     }
