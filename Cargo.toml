@@ -73,6 +73,10 @@ obs-glorp-capture = { path = "crates/obs-glorp-capture", optional = true }
 render-dll = { path = "crates/render-dll", optional = true }
 webview-dll = { path = "crates/webview-dll", optional = true }
 
+[target.'cfg(target_os = "linux")'.dependencies]
+# cef-dll-sys somehow resolves to a newer CEF than the cef crate's own version suffix has
+cef = "=151.5.0"
+
 [build-dependencies]
 embed-resource = "3.0.*"
 toml = "1.1.*"
