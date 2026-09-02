@@ -9,6 +9,7 @@ mod app;
 mod config;
 mod constants;
 mod handlers;
+mod shared;
 mod utils;
 mod window;
 pub mod modules {

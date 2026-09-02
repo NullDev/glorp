@@ -1,5 +1,5 @@
 use regex::Regex;
-use std::{env, fs, io::Read, sync::LazyLock};
+use std::{fs, io::Read, sync::LazyLock};
 use webview2_com::Microsoft::Web::WebView2::Win32::*;
 use windows::core::*;
 static METADATA_REGEX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"(?s)\A\s*\/\/ ==UserScript==.*?\/\/ ==\/UserScript=="#).unwrap());
@@ -32,9 +32,9 @@ fn parse(mut content: String) -> String {
 
 pub fn load(webview: &ICoreWebView2, social: bool) -> Result<()> {
     let scripts_dir = if social {
-        env::var("USERPROFILE").unwrap() + "\\Documents\\glorp\\scripts\\social"
+        crate::shared::paths::settings_dir().join("scripts").join("social")
     } else {
-        env::var("USERPROFILE").unwrap() + "\\Documents\\glorp\\scripts"
+        crate::shared::paths::settings_dir().join("scripts")
     };
 
     if let Ok(entries) = fs::read_dir(scripts_dir) {

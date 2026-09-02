@@ -14,14 +14,13 @@ use windows::Win32::System::Memory::*;
 use windows::core::*;
 
 pub fn init_fs() -> result::Result<(), io::Error> {
-    let user_profile = path::PathBuf::from(env::var("USERPROFILE").unwrap());
-    let client_dir = user_profile.join("Documents").join("glorp");
+    let client_dir = crate::shared::paths::settings_dir();
     let swap_dir = client_dir.join("swapper");
     let scripts_dir = client_dir.join("scripts").join("social");
     let flaglist_path = client_dir.join("user_flags.json");
     let blocklist_path = client_dir.join("user_blocklist.json");
 
-    let resources_dir = env::current_exe().unwrap().parent().unwrap().join("resources");
+    let resources_dir = crate::shared::paths::resources_dir();
 
     fs::create_dir_all(&swap_dir)?;
     fs::create_dir_all(&scripts_dir)?;

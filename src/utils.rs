@@ -1,8 +1,8 @@
 #![allow(non_snake_case)]
 use crate::CONFIG;
 use std::{
-    convert, env, fs, io, mem,
-    path::{self, *},
+    convert, fs, io, mem,
+    path::*,
 };
 use webview2_com::Microsoft::Web::WebView2::Win32::ICoreWebView2;
 use windows::{
@@ -83,10 +83,6 @@ pub fn LOWORD(l: usize) -> usize {
 
 pub fn HIWORD(l: usize) -> usize {
     (l >> 16) & 0xffff
-}
-
-pub fn settings_dir() -> path::PathBuf {
-    path::PathBuf::from(env::var("USERPROFILE").unwrap()).join("Documents").join("glorp")
 }
 
 pub fn config<T: serde::de::DeserializeOwned>(setting: &str, default: T) -> T {

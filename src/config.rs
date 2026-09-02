@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
-use std::{collections::HashMap, env, fs, fs::*, io::*};
+use std::{collections::HashMap, fs, fs::*, io::*};
 #[derive(Deserialize)]
 struct SettingInfo {
     #[serde(default)]
@@ -22,11 +22,10 @@ impl Config {
 
             settings_info.iter().map(|(key, info)| (key.clone(), info.default_value.clone())).collect()
         }
-        let client_dir: String = env::var("USERPROFILE").unwrap() + "\\Documents\\glorp";
-        let settings_path: String = client_dir + "\\settings.json";
+        let settings_path = crate::shared::paths::settings_dir().join("settings.json");
         let defaults = load_defaults();
 
-        if let Some(parent) = std::path::Path::new(&settings_path).parent() {
+        if let Some(parent) = settings_path.parent() {
             fs::create_dir_all(parent).expect("Failed to create settings directory");
         }
 
@@ -68,7 +67,7 @@ impl Config {
     }
 
     pub fn save(&self) {
-        let settings_path = env::var("USERPROFILE").unwrap() + "\\Documents\\glorp\\settings.json";
+        let settings_path = crate::shared::paths::settings_dir().join("settings.json");
         let settings_string = serde_json::to_string_pretty(&self.data).unwrap();
         fs::write(settings_path, settings_string).ok();
     }

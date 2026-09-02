@@ -196,9 +196,9 @@ pub fn send_info(webview: &ICoreWebView2) {
 
 pub fn open_documents_subpath(target: &str) {
     let path_to_open = match target {
-        "blocklist" => utils::settings_dir().join("user_blocklist.json"),
-        "swapper" => utils::settings_dir().join("swapper"),
-        "userscripts" => utils::settings_dir().join("scripts"),
+        "blocklist" => crate::shared::paths::settings_dir().join("user_blocklist.json"),
+        "swapper" => crate::shared::paths::settings_dir().join("swapper"),
+        "userscripts" => crate::shared::paths::settings_dir().join("scripts"),
         _ => return,
     };
     process::Command::new("explorer.exe").arg(path_to_open).spawn().ok();

@@ -364,7 +364,7 @@ pub fn create_webview2(
                 Box::new(move |environment_created_handler| {
                     CreateCoreWebView2EnvironmentWithOptions(
                         PCWSTR(utils::create_utf_string(current_dir.to_string_lossy() + "\\\\WebView2").as_ptr()),
-                        PCWSTR(utils::create_utf_string(env::var("USERPROFILE").unwrap() + "\\\\Documents\\\\glorp").as_ptr()),
+                        PCWSTR(utils::create_utf_string(crate::shared::paths::settings_dir().to_string_lossy()).as_ptr()),
                         &ICoreWebView2EnvironmentOptions::from(options),
                         &environment_created_handler,
                     )
