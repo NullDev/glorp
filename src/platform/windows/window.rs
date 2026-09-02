@@ -1,4 +1,4 @@
-use crate::{app::create_main_window, utils};
+use super::{app::create_main_window, utils};
 use std::{
     env,
     ffi::c_void,

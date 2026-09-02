@@ -2,7 +2,7 @@ use webview2_com::Microsoft::Web::WebView2::Win32::*;
 use windows::core::*;
 
 use crate::shared::userscripts;
-use crate::utils;
+use super::utils;
 
 pub fn load(webview: &ICoreWebView2, social: bool) -> Result<()> {
     let scripts_dir = if social {

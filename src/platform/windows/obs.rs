@@ -1,4 +1,5 @@
-use crate::{debug_print, utils};
+use crate::debug_print;
+use super::utils;
 use std::{fs, path::PathBuf};
 use webview2_com::Microsoft::Web::WebView2::Win32::ICoreWebView2;
 use windows::{

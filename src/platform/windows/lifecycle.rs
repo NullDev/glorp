@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use crate::{
+use super::{
     constants,
     utils::{self, create_utf_string},
 };
@@ -142,7 +142,7 @@ pub fn check_major_update() {
             ShellExecuteW(
                 None,
                 w!("open"),
-                PCWSTR(crate::utils::create_utf_string(output_path.to_string_lossy()).as_ptr()),
+                PCWSTR(super::utils::create_utf_string(output_path.to_string_lossy()).as_ptr()),
                 w!("/q"),
                 None,
                 SW_NORMAL,

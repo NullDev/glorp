@@ -1,5 +1,5 @@
-use crate::utils::config;
-use crate::{handlers, modules, utils, window};
+use super::utils::config;
+use super::{handlers, utils, window};
 use discord_rich_presence::{DiscordIpc, DiscordIpcClient};
 use std::{
     env, fs, io, path, result,
@@ -61,7 +61,7 @@ pub fn create_main_window(env: Option<ICoreWebView2Environment>) -> window::Wind
         }
     }
 
-    let mut args = modules::flaglist::load();
+    let mut args = super::flaglist::load();
     if config("uncapFps", true) {
         args.push_str(" --disable-frame-rate-limit");
     }
@@ -88,10 +88,10 @@ pub fn create_main_window(env: Option<ICoreWebView2Environment>) -> window::Wind
         *discord_client.lock().unwrap() = Some(client);
     }
 
-    modules::priority::set(config("webviewPriority", "Normal".to_string()));
+    super::priority::set(config("webviewPriority", "Normal".to_string()));
 
     if config("userscripts", true)
-        && let Err(e) = modules::userscripts::load(&main_window.webview, false)
+        && let Err(e) = super::userscripts::load(&main_window.webview, false)
     {
         eprintln!("Failed to load userscripts: {}", e);
     }
@@ -106,7 +106,7 @@ pub fn create_main_window(env: Option<ICoreWebView2Environment>) -> window::Wind
         }
 
         #[cfg(feature = "auto-update")]
-        if let Ok(buffer) = modules::lifecycle::read_js_bundle() {
+        if let Ok(buffer) = super::lifecycle::read_js_bundle() {
             buf = buffer;
         }
 
@@ -137,7 +137,7 @@ pub fn create_main_window(env: Option<ICoreWebView2Environment>) -> window::Wind
     }
 
     if config("realPing", false) {
-        modules::ping::load(&main_window.webview);
+        super::ping::load(&main_window.webview);
     }
 
     let main_window_for_message = main_window.clone();

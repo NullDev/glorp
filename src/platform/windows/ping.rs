@@ -51,7 +51,7 @@ pub fn ping(webview: &ICoreWebView2) {
     unsafe {
         if let Ok(reply) = result {
             webview
-                .PostWebMessageAsJson(PCWSTR(crate::utils::create_utf_string(format!("{{\"pingInfo\":{}}}", reply.rtt)).as_ptr()))
+                .PostWebMessageAsJson(PCWSTR(super::utils::create_utf_string(format!("{{\"pingInfo\":{}}}", reply.rtt)).as_ptr()))
                 .ok();
         }
     }

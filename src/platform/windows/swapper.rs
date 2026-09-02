@@ -9,7 +9,7 @@ use windows::{
 };
 
 use crate::shared::swapper;
-use crate::utils;
+use super::utils;
 
 pub fn load(window: &ICoreWebView2) -> HashMap<String, IStream> {
     let swap_dir = crate::shared::paths::settings_dir().join("swapper");

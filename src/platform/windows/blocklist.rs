@@ -4,7 +4,7 @@ use webview2_com::Microsoft::Web::WebView2::Win32::*;
 use windows::core::*;
 
 use crate::shared::blocklist;
-use crate::utils;
+use super::utils;
 
 const EXAMPLE_BLOCKLIST: &str = r#"
 {

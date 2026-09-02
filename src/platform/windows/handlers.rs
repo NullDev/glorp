@@ -1,4 +1,5 @@
-use crate::{debug_print, modules, utils, utils::config, window};
+use crate::debug_print;
+use super::{utils, utils::config, window};
 use discord_rich_presence::{DiscordIpc, DiscordIpcClient, activity};
 use std::{
     process, result,
@@ -39,7 +40,7 @@ pub fn set_permission_requested_handler(webview: &ICoreWebView2, token: &mut i64
 pub fn set_web_resource_requested_handler(webview: &ICoreWebView2, env: &ICoreWebView2Environment, token: &mut i64) {
     let env_clone = env.clone();
     let swaps = if config("swapper", true) {
-        modules::swapper::load(webview)
+        super::swapper::load(webview)
     } else {
         std::collections::HashMap::new()
     };
@@ -137,7 +138,7 @@ pub fn set_new_window_requested_handler(webview: &ICoreWebView2, env: &ICoreWebV
             let webview = unsafe { controller.CoreWebView2().unwrap() };
             if uri.contains("krunker.io/social.html")
                 && config("userscripts", false)
-                && let Err(e) = modules::userscripts::load(&webview, true)
+                && let Err(e) = super::userscripts::load(&webview, true)
             {
                 println!("can't load userscripts on social window {}", e);
             }
@@ -167,7 +168,7 @@ pub fn set_handlers<T: utils::EnvironmentRef>(webview: &ICoreWebView2, env_wrapp
     set_permission_requested_handler(webview, &mut token);
 
     if config("blocklist", true) {
-        modules::blocklist::load(webview);
+        super::blocklist::load(webview);
     }
 
     set_web_resource_requested_handler(webview, env, &mut token);
@@ -220,17 +221,17 @@ pub fn handle_web_message(
             if *setting == "renderFpsLimit"
                 && let Ok(fps_limit) = value.parse::<u64>()
             {
-                let ptr = crate::app::SHARED_STATS_PTR.load(std::sync::atomic::Ordering::SeqCst);
+                let ptr = super::app::SHARED_STATS_PTR.load(std::sync::atomic::Ordering::SeqCst);
                 if ptr != 0 {
                     unsafe {
-                        (*(ptr as *mut crate::app::SharedStats)).target_fps = fps_limit;
+                        (*(ptr as *mut super::app::SharedStats)).target_fps = fps_limit;
                     }
                 }
             }
         }
         ["obs-plugin", value] => {
             let install = value.parse::<bool>().unwrap_or(false);
-            modules::obs::set_plugin_installed(webview, install);
+            super::obs::set_plugin_installed(webview, install);
             if !install {
                 crate::CONFIG.lock().unwrap().set("obsCapturePlugin", false);
             }
@@ -294,7 +295,7 @@ pub fn handle_web_message(
             }
         }
         ["ping"] => {
-            modules::ping::ping(webview);
+            super::ping::ping(webview);
         }
         _ => {}
     }
