@@ -55,6 +55,26 @@ wrap_window_delegate! {
             }
         }
 
+        fn can_resize(&self, _window: Option<&mut Window>) -> ::std::os::raw::c_int {
+            1
+        }
+
+        fn can_maximize(&self, _window: Option<&mut Window>) -> ::std::os::raw::c_int {
+            1
+        }
+
+        fn can_minimize(&self, _window: Option<&mut Window>) -> ::std::os::raw::c_int {
+            1
+        }
+
+        fn can_close(&self, _window: Option<&mut Window>) -> ::std::os::raw::c_int {
+            1
+        }
+
+        fn with_standard_window_buttons(&self, _window: Option<&mut Window>) -> ::std::os::raw::c_int {
+            i32::from(self.start_mode != "Borderless Fullscreen")
+        }
+
         fn is_frameless(&self, _window: Option<&mut Window>) -> ::std::os::raw::c_int {
             i32::from(self.start_mode == "Borderless Fullscreen")
         }
