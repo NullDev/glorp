@@ -1,7 +1,7 @@
 use cef::{args::Args, rc::*, *};
 use std::{fs, io, sync::Mutex};
 
-use super::{config, handlers, window};
+use super::{config, handlers, renderer, rpc, window};
 use crate::shared::{constants, flaglist, paths};
 
 const KRUNKER_URL: &str = "https://krunker.io";
@@ -61,6 +61,7 @@ wrap_browser_process_handler! {
 
     impl BrowserProcessHandler {
         fn on_context_initialized(&self) {
+            rpc::init();
             let mut client = handlers::GlorpClient::new();
             window::create(&mut client, KRUNKER_URL);
         }
@@ -73,6 +74,10 @@ wrap_app! {
     impl App {
         fn browser_process_handler(&self) -> Option<BrowserProcessHandler> {
             Some(GlorpBrowserProcessHandler::new())
+        }
+
+        fn render_process_handler(&self) -> Option<RenderProcessHandler> {
+            Some(renderer::GlorpRenderProcessHandler::new())
         }
 
         fn on_before_command_line_processing(&self, process_type: Option<&CefString>, command_line: Option<&mut CommandLine>) {

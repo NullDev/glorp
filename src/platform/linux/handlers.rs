@@ -1,5 +1,6 @@
 use cef::{
     rc::*,
+    wrapper::message_router::MessageRouterBrowserSideHandlerCallbacks,
     wrapper::byte_read_handler::{ByteReadHandler, ByteStream},
     wrapper::stream_resource_handler::StreamResourceHandler,
     *,
@@ -7,7 +8,7 @@ use cef::{
 use std::collections::HashMap;
 use std::sync::{Arc, LazyLock, Mutex};
 
-use super::{config, window};
+use super::{bridge, config, window};
 use crate::shared::{blocklist, paths, swapper, urls};
 
 static BLOCKLIST: LazyLock<Vec<String>> = LazyLock::new(|| {
@@ -110,6 +111,28 @@ wrap_request_handler! {
         ) -> Option<ResourceRequestHandler> {
             Some(GlorpResourceRequestHandler::new())
         }
+
+        fn on_before_browse(
+            &self,
+            browser: Option<&mut Browser>,
+            frame: Option<&mut Frame>,
+            _request: Option<&mut Request>,
+            _user_gesture: ::std::os::raw::c_int,
+            _is_redirect: ::std::os::raw::c_int,
+        ) -> ::std::os::raw::c_int {
+            bridge::router().on_before_browse(browser.map(|b| b.clone()), frame.map(|f| f.clone()));
+            0
+        }
+
+        fn on_render_process_terminated(
+            &self,
+            browser: Option<&mut Browser>,
+            _status: TerminationStatus,
+            _error_code: ::std::os::raw::c_int,
+            _error_string: Option<&CefString>,
+        ) {
+            bridge::router().on_render_process_terminated(browser.map(|b| b.clone()));
+        }
     }
 }
 
@@ -193,6 +216,16 @@ wrap_permission_handler! {
     }
 }
 
+wrap_life_span_handler! {
+    pub struct GlorpLifeSpanHandler;
+
+    impl LifeSpanHandler {
+        fn on_before_close(&self, browser: Option<&mut Browser>) {
+            bridge::router().on_before_close(browser.map(|b| b.clone()));
+        }
+    }
+}
+
 wrap_client! {
     pub struct GlorpClient;
 
@@ -207,6 +240,26 @@ wrap_client! {
 
         fn keyboard_handler(&self) -> Option<KeyboardHandler> {
             Some(GlorpKeyboardHandler::new())
+        }
+
+        fn life_span_handler(&self) -> Option<LifeSpanHandler> {
+            Some(GlorpLifeSpanHandler::new())
+        }
+
+        fn on_process_message_received(
+            &self,
+            browser: Option<&mut Browser>,
+            frame: Option<&mut Frame>,
+            source_process: ProcessId,
+            message: Option<&mut ProcessMessage>,
+        ) -> ::std::os::raw::c_int {
+            let handled = bridge::router().on_process_message_received(
+                browser.map(|b| b.clone()),
+                frame.map(|f| f.clone()),
+                source_process,
+                message.map(|m| m.clone()),
+            );
+            i32::from(handled)
         }
     }
 }

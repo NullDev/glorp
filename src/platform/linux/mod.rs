@@ -1,5 +1,8 @@
 pub mod app;
+pub mod bridge;
 pub mod handlers;
+pub mod renderer;
+pub mod rpc;
 pub mod window;
 
 // mirrors platform::windows::utils::config
