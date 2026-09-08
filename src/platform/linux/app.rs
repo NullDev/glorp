@@ -1,7 +1,7 @@
 use cef::{args::Args, rc::*, *};
 use std::{fs, io, sync::Mutex};
 
-use super::{config, handlers, renderer, rpc, window};
+use super::{config, handlers, instance, renderer, rpc, window};
 use crate::shared::{constants, flaglist, paths};
 
 const KRUNKER_URL: &str = "https://krunker.io";
@@ -110,6 +110,11 @@ pub fn run() {
         std::process::exit(code);
     }
 
+    if !instance::acquire() {
+        // another instance owns the socket and now has our args
+        std::process::exit(0);
+    }
+
     if let Err(e) = init_fs() {
         eprintln!("failed to set all the files in place {}", e);
     }
@@ -118,6 +123,7 @@ pub fn run() {
     let settings = Settings {
         user_agent: CefString::from("Electron"),
         locale: CefString::from("en-US"),
+        use_views_default_popup: 1,
         remote_debugging_port: std::env::var("GLORP_DEBUG_PORT").ok().and_then(|v| v.parse().ok()).unwrap_or(0),
         root_cache_path: CefString::from(paths::settings_dir().join("browser").to_string_lossy().as_ref()),
         ..Default::default()
