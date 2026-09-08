@@ -105,11 +105,10 @@ fn send_info(frame: &mut Frame) {
     info.insert("settings".to_string(), settings);
     info.insert("version".to_string(), serde_json::Value::String(env!("CARGO_PKG_VERSION").to_string()));
 
-    let launch_args = crate::LAUNCH_ARGS.lock().unwrap();
+    let launch_args = super::launch_args();
     if !launch_args.is_empty() {
         info.insert("launchArgs".to_string(), serde_json::Value::String(launch_args.join(" ")));
     }
-    drop(launch_args);
 
     let json = serde_json::to_string(&info).unwrap_or_else(|_| "{}".to_string());
     dispatch(frame, &json);

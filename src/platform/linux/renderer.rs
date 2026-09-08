@@ -10,6 +10,7 @@ fn router() -> &'static Arc<RendererSideRouter> {
 }
 
 static SCRIPT: OnceLock<String> = OnceLock::new();
+static SOCIAL_SCRIPT: OnceLock<String> = OnceLock::new();
 
 fn frame_url(frame: &mut Frame) -> String {
     let userfree = frame.url();
@@ -30,7 +31,8 @@ wrap_render_process_handler! {
             }
 
             let social = frame_url(frame).contains("social.html");
-            let script = SCRIPT.get_or_init(|| bridge::document_start_script(social));
+            let cache = if social { &SOCIAL_SCRIPT } else { &SCRIPT };
+            let script = cache.get_or_init(|| bridge::document_start_script(social));
             if script.is_empty() {
                 return;
             }

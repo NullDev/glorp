@@ -8,7 +8,7 @@ use cef::{
 use std::collections::HashMap;
 use std::sync::{Arc, LazyLock, Mutex};
 
-use super::{bridge, config, devtools, ping, window};
+use super::{bridge, config, devtools, instance, ping, window};
 use crate::shared::{blocklist, paths, swapper, urls};
 
 static BLOCKLIST: LazyLock<Vec<String>> = LazyLock::new(|| {
@@ -227,6 +227,7 @@ wrap_life_span_handler! {
     impl LifeSpanHandler {
         fn on_after_created(&self, browser: Option<&mut Browser>) {
             let Some(browser) = browser else { return };
+            instance::set_browser(browser.clone());
             if config("realPing", false) {
                 PING_REGISTRATION.set(ping::load(browser));
             }
