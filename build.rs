@@ -13,6 +13,10 @@ fn main() {
     let dest_path = env::current_dir().unwrap().join("target/bundle_version");
     fs::write(dest_path, js_bundle_version).unwrap();
 
+    if target_os == "linux" {
+        println!("cargo:rustc-link-arg=-Wl,-rpath,$ORIGIN");
+    }
+
     if target_os == "windows" {
         embed_resource::compile("./resources/client.rc", embed_resource::NONE)
             .manifest_optional()
