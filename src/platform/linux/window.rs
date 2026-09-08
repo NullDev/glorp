@@ -1,7 +1,23 @@
 use cef::{rc::*, *};
+use std::cell::RefCell;
 
 use super::config;
 use crate::shared::window_state::WindowState;
+
+// CEF client callbacks all run on the UI thread, so a thread_local keeps the
+// Window reachable from the keyboard handler without unsafe Send
+thread_local! {
+    static WINDOW: RefCell<Option<Window>> = const { RefCell::new(None) };
+}
+
+pub fn toggle_fullscreen() {
+    WINDOW.with_borrow(|w| {
+        if let Some(window) = w {
+            let now = window.is_fullscreen();
+            window.set_fullscreen(i32::from(now == 0));
+        }
+    });
+}
 
 const DEFAULT_WIDTH: i32 = 1600;
 const DEFAULT_HEIGHT: i32 = 900;
@@ -48,9 +64,11 @@ wrap_window_delegate! {
             let mut view: View = (&self.browser_view).into();
             window.add_child_view(Some(&mut view));
             window.show();
+            WINDOW.set(Some(window.clone()));
         }
 
         fn on_window_destroyed(&self, _window: Option<&mut Window>) {
+            WINDOW.set(None);
             quit_message_loop();
         }
     }

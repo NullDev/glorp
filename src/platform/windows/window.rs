@@ -130,12 +130,7 @@ impl Window {
 
                     let current_url = take_pwstr(raw_uri);
 
-                    let target_url = current_url
-                        .split_once("game=")
-                        .map(|(_before, after)| after.trim())
-                        .filter(|id| !id.is_empty())
-                        .map(|id| format!("https://krunker.io/?exclude={}", id))
-                        .unwrap_or_else(|| "https://krunker.io/".to_string());
+                    let target_url = crate::shared::urls::new_lobby_url(&current_url);
 
                     let navigate_uri = HSTRING::from(&target_url);
                     self.webview.Navigate(&navigate_uri).ok();

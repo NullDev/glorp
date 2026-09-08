@@ -113,6 +113,7 @@ pub fn run() {
     let settings = Settings {
         user_agent: CefString::from("Electron"),
         locale: CefString::from("en-US"),
+        remote_debugging_port: std::env::var("GLORP_DEBUG_PORT").ok().and_then(|v| v.parse().ok()).unwrap_or(0),
         root_cache_path: CefString::from(paths::settings_dir().join("browser").to_string_lossy().as_ref()),
         ..Default::default()
     };
