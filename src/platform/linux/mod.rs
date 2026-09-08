@@ -1,5 +1,7 @@
 pub mod app;
 pub mod bridge;
+pub mod devtools;
+pub mod ping;
 pub mod handlers;
 pub mod renderer;
 pub mod rpc;

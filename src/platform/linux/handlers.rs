@@ -8,7 +8,7 @@ use cef::{
 use std::collections::HashMap;
 use std::sync::{Arc, LazyLock, Mutex};
 
-use super::{bridge, config, window};
+use super::{bridge, config, devtools, ping, window};
 use crate::shared::{blocklist, paths, swapper, urls};
 
 static BLOCKLIST: LazyLock<Vec<String>> = LazyLock::new(|| {
@@ -167,7 +167,7 @@ wrap_keyboard_handler! {
 
             match event.windows_key_code {
                 VK_F4 | VK_F6 => {
-                    // TODO: reset CPU throttle to 1.0, as Windows does
+                    devtools::set_cpu_throttling(browser, 1.0);
                     let current = frame_url(browser).unwrap_or_default();
                     let target = urls::new_lobby_url(&current);
                     if let Some(frame) = browser.main_frame() {
@@ -176,7 +176,7 @@ wrap_keyboard_handler! {
                     1
                 }
                 VK_F5 => {
-                    // TODO: reset CPU throttle to 1.0, as Windows does
+                    devtools::set_cpu_throttling(browser, 1.0);
                     browser.reload();
                     1
                 }
@@ -216,10 +216,22 @@ wrap_permission_handler! {
     }
 }
 
+// the observer is dropped if its Registration is not held
+thread_local! {
+    static PING_REGISTRATION: std::cell::RefCell<Option<Registration>> = const { std::cell::RefCell::new(None) };
+}
+
 wrap_life_span_handler! {
     pub struct GlorpLifeSpanHandler;
 
     impl LifeSpanHandler {
+        fn on_after_created(&self, browser: Option<&mut Browser>) {
+            let Some(browser) = browser else { return };
+            if config("realPing", false) {
+                PING_REGISTRATION.set(ping::load(browser));
+            }
+        }
+
         fn on_before_close(&self, browser: Option<&mut Browser>) {
             bridge::router().on_before_close(browser.map(|b| b.clone()));
         }
